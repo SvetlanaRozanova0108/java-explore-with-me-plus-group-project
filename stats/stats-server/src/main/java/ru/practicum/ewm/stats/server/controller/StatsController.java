@@ -3,33 +3,38 @@ package ru.practicum.ewm.stats.server.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.StatsDto;
-import ru.practicum.ewm.stats.server.service.RequestService;
+import ru.practicum.ewm.stats.server.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/stats")
 @Slf4j
 public class StatsController {
-    private final RequestService requestService;
+    private final StatsService statsService;
     private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    @GetMapping
+    @PostMapping("/hit")
+    private String saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+        log.info("На uri: {} сервиса был отправлен запрос пользователем."
+                , endpointHitDto.getUri());
+        statsService.saveHit(endpointHitDto);
+        return "Информация сохранена";
+    }
+
+    @GetMapping("/stats")
     private List<StatsDto> getStats(@RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime start,
                                     @RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime end,
                                     @RequestParam(defaultValue = "") List<String> uris,
                                     @RequestParam(defaultValue = "false") boolean unique) {
         log.info("Поступил запрос на получение статистики запросов c параметрами start: {}, end {}, uris {}, unique {}",
                 start, end, uris, unique);
-        return requestService.getStats(start.atZone(ZoneId.systemDefault()).toInstant(),
-                end.atZone(ZoneId.systemDefault()).toInstant(), uris, unique);
+        return statsService.getStats(start,
+                end, uris, unique);
     }
 }

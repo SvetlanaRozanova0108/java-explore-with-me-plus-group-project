@@ -1,15 +1,14 @@
 package ru.practicum.ewm.stats.dto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class StatsDto {
-     private String app;
-     private String uri;
-     private int hits;
+     String app;
+     String uri;
+     int hits;
 }

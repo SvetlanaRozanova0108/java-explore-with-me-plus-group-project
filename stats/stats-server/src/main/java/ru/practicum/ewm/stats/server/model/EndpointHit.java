@@ -2,28 +2,30 @@ package ru.practicum.ewm.stats.server.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "requests")
+@Table(name = "hit")
 @ToString
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class Request {
+public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_id")
-    private int id;
+    @Column(name = "hit_id")
+    Integer id;
     @Column(nullable = false)
-    private String app;
+    String app;
     @Column(nullable = false)
-    private String uri;
+    String uri;
     @Column(nullable = false)
-    private String ip;
+    String ip;
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate;
+    LocalDateTime createdDate;
 }

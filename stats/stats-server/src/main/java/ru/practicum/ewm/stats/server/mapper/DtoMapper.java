@@ -1,7 +1,9 @@
 package ru.practicum.ewm.stats.server.mapper;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.StatsDto;
+import ru.practicum.ewm.stats.server.model.EndpointHit;
 import ru.practicum.ewm.stats.server.model.StatsRequest;
 
 import java.util.List;
@@ -18,5 +20,14 @@ public class DtoMapper {
 
     public List<StatsDto> toStatsDto(List<StatsRequest> stats) {
         return stats.stream().map(DtoMapper::toStatsDto).toList();
+    }
+
+    public EndpointHit toEndpointHit(EndpointHitDto endpointHitDto) {
+        return EndpointHit.builder()
+                .app(endpointHitDto.getApp())
+                .uri(endpointHitDto.getUri())
+                .ip(endpointHitDto.getIp())
+                .createdDate(endpointHitDto.getTimestamp())
+                .build();
     }
 }
