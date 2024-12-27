@@ -18,7 +18,6 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Integer> {
     List<StatsRequest> getStatsByUriWithUniqueIp(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                                  @Param("uris") List<String> uris);
 
-
     @Query("select new ru.practicum.ewm.stats.server.model.StatsRequest(r.app, r.uri, count(distinct(r.ip))) " +
             "from EndpointHit AS r " +
             "where r.createdDate >= :start AND r.createdDate <= :end " +
@@ -27,8 +26,9 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Integer> {
 
     @Query("select new ru.practicum.ewm.stats.server.model.StatsRequest(r.app, r.uri, count(r)) " +
             "from EndpointHit AS r " +
-            "where r.createdDate >= :start AND r.createdDate <= :end AND uri in (:uris)" +
-            "group by r.app, r.uri")
+            "where r.createdDate >= :start AND r.createdDate <= :end AND uri in (:uris) " +
+            "group by r.app, r.uri " +
+            "order by count(r) desc")
     List<StatsRequest> getStatsByUri(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                      @Param("uris") List<String> uris);
 
