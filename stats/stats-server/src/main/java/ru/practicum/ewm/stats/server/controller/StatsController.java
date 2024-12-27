@@ -21,8 +21,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     private String saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
-        log.info("На uri: {} сервиса был отправлен запрос пользователем."
-                , endpointHitDto.getUri());
+        log.info("На uri: {} сервиса был отправлен запрос пользователем.", endpointHitDto.getUri());
         statsService.saveHit(endpointHitDto);
         return "Информация сохранена";
     }

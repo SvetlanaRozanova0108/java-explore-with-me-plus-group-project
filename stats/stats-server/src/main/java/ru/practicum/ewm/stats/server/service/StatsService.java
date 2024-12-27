@@ -10,5 +10,5 @@ public interface StatsService {
 
     List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 
-    void saveHit (EndpointHitDto endpointHitDto);
+    void saveHit(EndpointHitDto endpointHitDto);
 }

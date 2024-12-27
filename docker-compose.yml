@@ -17,8 +17,8 @@ services:
       - POSTGRES_USER=stat
       - POSTGRES_DB=ewm-stats
 
-  main-service:
-      build: main/main-service
+  ewm-service:
+      build: main-service
       container_name: main-service-container
       ports:
       - "8080:8080"
