@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.StatsDto;
 import ru.practicum.ewm.stats.server.mapper.DtoMapper;
-import ru.practicum.ewm.stats.server.model.StatsRequest;
 import ru.practicum.ewm.stats.server.repository.StatsRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -17,21 +17,21 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
-
+    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @Override
-    public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        List<StatsRequest> statsRequests;
+    public List<StatsDto> getStats(String start, String end, List<String> uris, boolean unique) {
+        LocalDateTime startTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(TIME_PATTERN));
+        LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(TIME_PATTERN));
         if (!uris.isEmpty() && unique) {
-            statsRequests = statsRepository.getStatsByUriWithUniqueIp(start, end, uris);
+            return statsRepository.getStatsByUriWithUniqueIp(startTime, endTime, uris);
         } else if (uris.isEmpty() && unique) {
-            statsRequests = statsRepository.getStatsWithUniqueIp(start, end);
+            return statsRepository.getStatsWithUniqueIp(startTime, endTime);
         } else if (!uris.isEmpty()) {
-            statsRequests = statsRepository.getStatsByUri(start, end, uris);
+            return statsRepository.getStatsByUri(startTime, endTime, uris);
         } else {
-            statsRequests = statsRepository.getStats(start, end);
+            return statsRepository.getStats(startTime, endTime);
         }
-        return DtoMapper.toStatsDto(statsRequests);
     }
 
     @Transactional
