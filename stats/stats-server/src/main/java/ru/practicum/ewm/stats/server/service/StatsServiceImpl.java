@@ -9,7 +9,6 @@ import ru.practicum.ewm.stats.server.mapper.DtoMapper;
 import ru.practicum.ewm.stats.server.repository.StatsRepository;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -17,20 +16,17 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
-    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @Override
-    public List<StatsDto> getStats(String start, String end, List<String> uris, boolean unique) {
-        LocalDateTime startTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(TIME_PATTERN));
-        LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(TIME_PATTERN));
+    public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         if (!uris.isEmpty() && unique) {
-            return statsRepository.getStatsByUriWithUniqueIp(startTime, endTime, uris);
+            return statsRepository.getStatsByUriWithUniqueIp(start, end, uris);
         } else if (uris.isEmpty() && unique) {
-            return statsRepository.getStatsWithUniqueIp(startTime, endTime);
+            return statsRepository.getStatsWithUniqueIp(start, end);
         } else if (!uris.isEmpty()) {
-            return statsRepository.getStatsByUri(startTime, endTime, uris);
+            return statsRepository.getStatsByUri(start, end, uris);
         } else {
-            return statsRepository.getStats(startTime, endTime);
+            return statsRepository.getStats(start, end);
         }
     }
 

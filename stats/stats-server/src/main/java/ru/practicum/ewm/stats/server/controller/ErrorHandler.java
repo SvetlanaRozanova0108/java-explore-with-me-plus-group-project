@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 @Slf4j
@@ -15,6 +16,15 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidExceptions(
             MethodArgumentNotValidException e) {
+        String message = e.getMessage();
+        log.debug("Получен статус 400 BAD_REQUEST {}", message, e);
+        return new ErrorResponse(message);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e) {
         String message = e.getMessage();
         log.debug("Получен статус 400 BAD_REQUEST {}", message, e);
         return new ErrorResponse(message);
