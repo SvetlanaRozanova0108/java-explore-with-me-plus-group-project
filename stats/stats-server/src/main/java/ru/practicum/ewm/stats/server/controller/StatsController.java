@@ -20,17 +20,17 @@ public class StatsController {
     private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @PostMapping("/hit")
-    private String saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+    public String saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         log.info("На uri: {} сервиса был отправлен запрос пользователем.", endpointHitDto.getUri());
         statsService.saveHit(endpointHitDto);
         return "Информация сохранена";
     }
 
     @GetMapping("/stats")
-    private List<StatsDto> getStats(@RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime start,
-                                    @RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime end,
-                                    @RequestParam(defaultValue = "") List<String> uris,
-                                    @RequestParam(defaultValue = "false") boolean unique) {
+    public List<StatsDto> getStats(@RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime start,
+                                   @RequestParam @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime end,
+                                   @RequestParam(defaultValue = "") List<String> uris,
+                                   @RequestParam(defaultValue = "false") boolean unique) {
         log.info("Поступил запрос на получение статистики запросов c параметрами start: {}, end {}, uris {}, unique {}",
                 start, end, uris, unique);
         return statsService.getStats(start, end, uris, unique);
