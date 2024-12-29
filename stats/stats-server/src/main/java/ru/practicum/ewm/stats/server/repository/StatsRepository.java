@@ -9,7 +9,7 @@ import ru.practicum.ewm.stats.server.model.EndpointHit;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface StatsRepository extends JpaRepository<EndpointHit, Integer> {
+public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
 
     @Query("select new ru.practicum.ewm.stats.dto.StatsDto(r.app, r.uri, count(distinct(r.ip))) " +
             "from EndpointHit AS r " +
