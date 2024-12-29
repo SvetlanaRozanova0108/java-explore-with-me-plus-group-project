@@ -4,7 +4,7 @@
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
-//import ru.practicum.ewm.stats.client.client.StatClient;
+//import ru.practicum.ewm.stats.client.client.StatClientImpl;
 //import ru.practicum.ewm.stats.dto.EndpointHitDto;
 //
 //import java.time.LocalDateTime;
@@ -18,7 +18,7 @@
 //@AllArgsConstructor(onConstructor_ = @Autowired)
 //public class ClientTests {
 //
-//    private final StatClient statClient;
+//    private final StatClientImpl statClient;
 //
 //    @Test
 //    public void saveHitTest() {
