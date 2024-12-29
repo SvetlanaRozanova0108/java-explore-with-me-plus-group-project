@@ -25,7 +25,7 @@ public class StatClientImpl implements StatClient {
 
 
     @Autowired
-    public StatClientImpl (@Value ("${ewm-server.url}") String serverUrl) {
+    public StatClientImpl(@Value ("${ewm-server.url}") String serverUrl) {
         this.serverUrl = serverUrl;
 
         this.restClient = RestClient.builder().baseUrl(serverUrl).build();
