@@ -18,7 +18,7 @@ public class MainApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(MainApplication.class, args);
 
-        //checkStatClient(context);
+        checkStatClient(context);
     }
 
     private static void checkStatClient(ConfigurableApplicationContext context) {
