@@ -1,4 +1,4 @@
-package ru.practicum.ewm.stats.client.client;
+package ru.practicum.ewm.stats.client;
 
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.StatsDto;
@@ -10,5 +10,5 @@ public interface StatClient {
 
     String saveHit(EndpointHitDto requestBody);
 
-    List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
+    List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, String uris, boolean unique);
 }
