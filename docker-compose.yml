@@ -24,11 +24,11 @@ services:
       - "8080:8080"
       environment:
         - CLIENT_URL=http://stats-server:9090
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/ewm-main
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-main
         - SPRING_DATASOURCE_USERNAME=main
         - SPRING_DATASOURCE_PASSWORD=main
 
-  main-db:
+  ewm-db:
     image: postgres:16.1
     container_name: postgres-ewm-main-db
     ports:

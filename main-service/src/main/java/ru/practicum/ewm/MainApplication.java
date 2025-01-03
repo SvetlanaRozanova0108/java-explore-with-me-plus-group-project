@@ -9,8 +9,6 @@ import ru.practicum.ewm.stats.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-
 @SpringBootApplication
 @Slf4j
 public class MainApplication {
@@ -37,7 +35,5 @@ public class MainApplication {
         var sut = statClient.getStats(LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1),
                 "/events/1", false);
         log.info("Размер списка: {}", sut.size());
-
-        assertNotNull(sut);
     }
 }

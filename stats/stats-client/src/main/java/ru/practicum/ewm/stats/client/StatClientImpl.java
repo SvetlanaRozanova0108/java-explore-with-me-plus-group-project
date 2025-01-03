@@ -45,11 +45,12 @@ public class StatClientImpl implements StatClient {
 
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, String uris, boolean unique) {
 
-        Map<String, Object> var = Map.of("start", start, "end", end, "uris", uris, "unique", unique);
+        Map<String, Object> requestParams = Map.of("start", start, "end", end, "uris", uris,
+                "unique", unique);
 
         UriComponents uriComponents = UriComponentsBuilder
                 .fromUriString("/stats?start={start}&end={end}&uris={uris}&unique={unique}")
-                .build().expand(var);
+                .build().expand(requestParams);
 
         return restClient.get()
                 .uri(uriComponents.toUriString())
