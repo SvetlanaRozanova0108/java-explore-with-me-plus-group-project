@@ -10,6 +10,9 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
+import ru.practicum.ewm.event.enums.State;
+import ru.practicum.ewm.event.enums.StateAction;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
@@ -22,6 +25,7 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -78,6 +82,9 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Пользователь не найден");
         }
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Событие не найдено"));
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
+            throw new ValidationException("Можно просмотреть только своё событие");
+        }
         String uri = "/events/" + eventId;
         List<StatsDto> statsList = statClient.getStats(LocalDateTime.now().minusYears(1),
                 LocalDateTime.now().plusYears(1), uri, false);
@@ -87,6 +94,56 @@ public class EventServiceImpl implements EventService {
         } else {
             return EventMapper.mapToFullDto(event, 0L);
         }
+    }
+
+    @Override
+    public EventFullDto updateEventOfUser(UpdateEventUserRequest updateRequest, Long userId, Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Событие не найдено"));
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
+            throw new ValidationException("Можно просмотреть только своё событие");
+        }
+
+        if (event.getState() == State.PUBLISHED) {
+            throw new ValidationException("Нельзя изменить опубликованное событие");
+        }
+        
+        if (updateRequest.getAnnotation() != null && !updateRequest.getAnnotation().isBlank()) {
+            event.setAnnotation(updateRequest.getAnnotation());
+        }
+        if (updateRequest.getCategory() != null) {
+            Category category = categoryRepository.findById(updateRequest.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+            event.setCategory(category);
+        }
+        if (updateRequest.getDescription() != null && !updateRequest.getDescription().isBlank()) {
+            event.setDescription(updateRequest.getDescription());
+        }
+        if (updateRequest.getEventDate() != null) {
+            event.setEventDate(updateRequest.getEventDate());
+        }
+        if (updateRequest.getLocation() != null) {
+            event.setLat(updateRequest.getLocation().getLat());
+            event.setLon(updateRequest.getLocation().getLon());
+        }
+        if (updateRequest.getPaid() != null) {
+            event.setPaid(updateRequest.getPaid());
+        }
+        if (updateRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateRequest.getParticipantLimit());
+        }
+        if (updateRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateRequest.getRequestModeration());
+        }
+        if (updateRequest.getTitle() != null && !updateRequest.getTitle().isBlank()) {
+            event.setTitle(updateRequest.getTitle());
+        }
+        if (updateRequest.getStateAction() == StateAction.SEND_TO_REVIEW) {
+            event.setState(State.PUBLISHED);
+        }
+        if (updateRequest.getStateAction() == StateAction.CANCEL_REVIEW) {
+            event.setState(State.CANCELED);
+        }
+        return EventMapper.mapToFullDto(event, 0L);
     }
 
     private void checkFields(NewEventDto dto) {

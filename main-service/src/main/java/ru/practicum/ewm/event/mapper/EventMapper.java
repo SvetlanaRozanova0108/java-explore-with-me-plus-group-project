@@ -8,7 +8,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Location;
-import ru.practicum.ewm.event.model.State;
+import ru.practicum.ewm.event.enums.State;
 import ru.practicum.ewm.user.mapper.UserMapper;
 import ru.practicum.ewm.user.model.User;
 
@@ -25,7 +25,7 @@ public class EventMapper {
                 .confirmedRequests(0)
                 .createdOn(LocalDateTime.now())
                 .description(eventDto.getDescription())
-                .state(State.CREATED)
+                .state(State.PENDING)
                 .title(eventDto.getTitle())
                 .lat(eventDto.getLocation().getLat())
                 .lon(eventDto.getLocation().getLon())
