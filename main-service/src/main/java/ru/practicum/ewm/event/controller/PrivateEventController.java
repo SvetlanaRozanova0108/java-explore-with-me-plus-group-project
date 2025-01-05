@@ -40,7 +40,7 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventOfUser(@RequestBody UpdateEventUserRequest updateRequest, @PathVariable Long userId,
+    public EventFullDto updateEventOfUser(@Valid @RequestBody UpdateEventUserRequest updateRequest, @PathVariable Long userId,
                                           @PathVariable Long eventId) {
         return eventService.updateEventOfUser(updateRequest, userId, eventId);
     }

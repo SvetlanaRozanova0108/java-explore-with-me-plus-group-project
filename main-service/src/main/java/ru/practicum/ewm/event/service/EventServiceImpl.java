@@ -137,11 +137,12 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getTitle() != null && !updateRequest.getTitle().isBlank()) {
             event.setTitle(updateRequest.getTitle());
         }
-        if (updateRequest.getStateAction() == StateAction.SEND_TO_REVIEW) {
-            event.setState(State.PUBLISHED);
-        }
-        if (updateRequest.getStateAction() == StateAction.CANCEL_REVIEW) {
-            event.setState(State.CANCELED);
+        if (updateRequest.getStateAction() != null) {
+            if (updateRequest.getStateAction() == StateAction.SEND_TO_REVIEW) {
+                event.setState(State.PUBLISHED);
+            } else if (updateRequest.getStateAction() == StateAction.CANCEL_REVIEW) {
+                event.setState(State.CANCELED);
+            }
         }
         return EventMapper.mapToFullDto(event, 0L);
     }

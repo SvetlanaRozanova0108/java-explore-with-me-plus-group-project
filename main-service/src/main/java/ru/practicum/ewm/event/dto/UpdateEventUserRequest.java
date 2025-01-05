@@ -32,6 +32,5 @@ public class UpdateEventUserRequest {
     Boolean requestModeration;
     @Size(min = 3, max = 120)
     String title;
-    @NotNull
     StateAction stateAction;
 }
