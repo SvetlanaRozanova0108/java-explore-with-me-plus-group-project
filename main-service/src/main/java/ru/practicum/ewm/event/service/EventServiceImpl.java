@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
         if (event.getState() == State.PUBLISHED) {
             throw new ValidationException("Нельзя изменить опубликованное событие");
         }
-        
+
         if (updateRequest.getAnnotation() != null && !updateRequest.getAnnotation().isBlank()) {
             event.setAnnotation(updateRequest.getAnnotation());
         }
