@@ -49,16 +49,18 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!participantLimit.equals(0) && participantLimit.equals(confirmedRequests)) {
             throw new ConflictDataException("Лимит запросов на участие в событии уже достигнут");
         }
-        ParticipationRequest.ParticipationRequestBuilder builder = ParticipationRequest.builder()
-                .requester(user)
-                .event(event);
-        if (event.getRequestModeration()) {
-            builder.status(Status.PENDING);
-        } else {
-            builder.status(Status.CONFIRMED);
+        Status status;
+        if (participantLimit.equals(0) || !event.getRequestModeration()) {
+            status = Status.CONFIRMED;
             event.setConfirmedRequests(++confirmedRequests);
-        }
-        return ParticipationRequestMapper.toParticipationRequestDto(requestRepository.save(builder.build()));
+        } else
+            status = Status.PENDING;
+        ParticipationRequest participationRequest = ParticipationRequest.builder()
+                .requester(user)
+                .event(event)
+                .status(status)
+                .build();
+        return ParticipationRequestMapper.toParticipationRequestDto(requestRepository.save(participationRequest));
     }
 
     @Transactional
