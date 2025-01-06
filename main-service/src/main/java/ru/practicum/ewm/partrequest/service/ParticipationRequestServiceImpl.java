@@ -38,7 +38,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (requestRepository.existsByRequesterAndEvent(user, event)) {
             throw new DuplicateException("Такой запрос уже существует");
         }
-        if (event.getInitiator().equals(user)) {
+        if (event.getInitiator().getId().equals(user.getId())) {
             throw new ConflictDataException("Пользователь не может создать запрос на участие в своем же событии");
         }
         if (!event.getState().equals(State.PUBLISHED)) {
