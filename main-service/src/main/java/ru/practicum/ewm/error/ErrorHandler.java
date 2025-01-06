@@ -10,6 +10,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ru.practicum.ewm.exception.ConflictDataException;
 import ru.practicum.ewm.exception.DuplicateException;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.exception.ValidationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -57,6 +58,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
         log.debug("Получен статус 404 NOT_FOUND {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(final ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
