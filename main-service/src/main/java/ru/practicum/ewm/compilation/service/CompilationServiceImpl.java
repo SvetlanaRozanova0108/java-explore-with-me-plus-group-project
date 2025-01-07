@@ -41,6 +41,9 @@ public class CompilationServiceImpl implements CompilationService {
         } else {
             events = Collections.emptyList();
         }
+        if (newCompilationDto.getPinned() == null) {
+            newCompilationDto.setPinned(false);
+        }
         Compilation compilation = compilationRepository.save(CompilationMapper.toCompilation(newCompilationDto, events));
         return CompilationMapper.toCompilationDto(compilation, mapToEventShort(events));
 

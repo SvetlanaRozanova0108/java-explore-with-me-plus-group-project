@@ -16,8 +16,9 @@ public class PublicCompilationController {
     private final CompilationService compilationService;
 
     @GetMapping
-    public List<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned, @RequestParam Integer from,
-                                                   @RequestParam Integer size) {
+    public List<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned,
+                                                   @RequestParam(defaultValue = "0") Integer from,
+                                                   @RequestParam(defaultValue = "10") Integer size) {
         log.info("Поступил запрос на получение всех подборок событий");
         return compilationService.getAllCompilations(pinned, from, size);
     }
