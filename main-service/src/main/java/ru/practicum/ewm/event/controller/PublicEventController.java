@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.event.dto.EventPublicFilter;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.EventPublicFilter;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.enums.SortType;
 import ru.practicum.ewm.event.service.EventService;
@@ -64,13 +64,24 @@ public class PublicEventController {
          filter.setCategories(categories);
          filter.setPaid(paid);
          filter.setOnlyAvailable(onlyAvailable);
+         try {
+             return eventService.getPublicEventsByFilter(httpServletRequest, filter);
+         } catch (Exception e) {
+             log.error("При запуске с параметрами " + filter, e);
+             throw e;
+         }
 
-         return eventService.getPublicEventsByFilter(httpServletRequest, filter);
      }
 
      @GetMapping("/{id}")
      public EventFullDto getEventById(HttpServletRequest httpServletRequest, @PathVariable("id") @Positive Long id) {
          log.info("Получение подробной информации об опубликованном событии по его идентификатору.");
-         return eventService.getPublicEventById(httpServletRequest, id);
+
+         try {
+             return eventService.getPublicEventById(httpServletRequest, id);
+         } catch (Exception e) {
+             log.error("При запуске с параметрами id " + id, e);
+             throw e;
+         }
      }
 }

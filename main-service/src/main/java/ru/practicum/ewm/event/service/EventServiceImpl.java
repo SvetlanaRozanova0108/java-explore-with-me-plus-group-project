@@ -173,6 +173,7 @@ public class EventServiceImpl implements EventService {
                 event.setState(State.CANCELED);
             }
         }
+
         return EventMapper.mapToFullDto(event, 0L);
     }
 
@@ -189,6 +190,9 @@ public class EventServiceImpl implements EventService {
         } else {
             events = eventRepository
                     .findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(State.PUBLISHED, inputFilter.getText(), inputFilter.getText(), inputFilter.getRangeStart(), inputFilter.getRangeEnd());
+        }
+        if (events == null || events.isEmpty()) {
+            return new ArrayList<EventShortDto>();
         }
 
         List<String> urisList = events
@@ -262,7 +266,7 @@ public class EventServiceImpl implements EventService {
                 () -> new NotFoundRecordInBDException(String.format("Не найдено событие в БД с ID = %d.", id)));
 
         if (event.getState() != State.PUBLISHED)
-            throw new NotFoundRecordInBDException("Посмотреть можно только опубликованное событие.");
+            throw new NotFoundException("Посмотреть можно только опубликованное событие.");
 
 
         Optional<StatsDto> stat = statClient.getStats(event.getCreatedOn(),
@@ -299,12 +303,14 @@ public class EventServiceImpl implements EventService {
 
         if (input.getRangeStart() == null && input.getRangeEnd() == null) {
             events = eventRepository
-                    .findAllByInitiatorIdContainsAndStateContainsAndCategoryContainsAndCreatedOnAfterOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), LocalDateTime.now(), pageable);
+                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), LocalDateTime.now(), pageable);
         } else {
             events = eventRepository
-                    .findAllByInitiatorIdContainsAndStateContainsAndCategoryContainsAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), input.getRangeStart(), input.getRangeEnd(), pageable);
+                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), input.getRangeStart(), input.getRangeEnd(), pageable);
         }
-
+        if (events == null || events.isEmpty()) {
+            return new ArrayList<EventFullDto>();
+        }
         List<String> urisList = events
                 .stream()
                 .map(event -> "/event/" + event.getId())
@@ -334,6 +340,7 @@ public class EventServiceImpl implements EventService {
     }
 
     // admin Редактирование данных любого события администратором. Валидация данных не требуется
+    @Transactional
     @Override
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
 
@@ -368,8 +375,10 @@ public class EventServiceImpl implements EventService {
         if (updateEventAdminRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
         }
-        if (StateAction.CANCEL_REVIEW.equals(updateEventAdminRequest.getStateAction()) ||
-                StateAction.REJECT_EVENT.equals(updateEventAdminRequest.getStateAction())) {
+        if (StateAction.REJECT_EVENT.equals(updateEventAdminRequest.getStateAction())) {
+            event.setState(State.CANCELED);
+        }
+        if (StateAction.CANCEL_REVIEW.equals(updateEventAdminRequest.getStateAction())) {
             event.setState(State.CANCELED);
         }
         if (StateAction.SEND_TO_REVIEW.equals(updateEventAdminRequest.getStateAction())) {
@@ -491,10 +500,6 @@ public class EventServiceImpl implements EventService {
             if (oldEvent.getState() == State.PUBLISHED) {
                 throw new OperationFailedException("Событие опубликовано, поэтому отменить его невозможно.");
             }
-        }
-        if (oldEvent.getState().equals(State.CANCELED)
-                && newEvent.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
-            throw new OperationFailedException("Невозможно отменить опубликованное событие.");
         }
     }
 

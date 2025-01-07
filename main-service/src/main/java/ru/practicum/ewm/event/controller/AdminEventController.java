@@ -1,10 +1,13 @@
 package ru.practicum.ewm.event.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.UpdateObject;
 import ru.practicum.ewm.event.dto.EventAdminFilter;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
@@ -20,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/admin/events")
+@Validated
 public class AdminEventController {
 
     private final EventService eventService;
@@ -51,14 +55,25 @@ public class AdminEventController {
                 throw new InvalidDateTimeException("Дата окончания события не может быть раньше даты начала события.");
             }
         }
+        try {
+            return eventService.getEventsForAdmin(filter);
+        } catch (Exception e) {
+            log.error("При запуске с параметрами " + filter, e);
+            throw e;
+        }
 
-        return eventService.getEventsForAdmin(filter);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PositiveOrZero @PathVariable Long eventId,
-                               @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
+                                    @Validated(UpdateObject.class) @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Редактирование данных любого события администратором.");
-        return eventService.updateEventAdmin(eventId, updateEventAdminRequest);
+
+        try {
+            return eventService.updateEventAdmin(eventId, updateEventAdminRequest);
+        } catch (Exception e) {
+            log.error("При запуске updateEvent c eventId" + eventId + ", параметрами " + updateEventAdminRequest, e);
+            throw e;
+        }
     }
 }

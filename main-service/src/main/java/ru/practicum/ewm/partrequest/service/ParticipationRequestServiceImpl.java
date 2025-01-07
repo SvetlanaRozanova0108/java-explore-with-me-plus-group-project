@@ -46,7 +46,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
             throw new ConflictDataException("Пользователь не может создать запрос на участие в своем же событии");
         }
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictDataException("Нельзя учавствовать в неопубликованном событии");
+            throw new ConflictDataException("Нельзя участвовать в неопубликованном событии");
         }
         Integer participantLimit = event.getParticipantLimit();
         Integer confirmedRequests = event.getConfirmedRequests();

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
     List<Event> findAllByInitiatorId(Long userId, PageRequest pageRequest);
 
     Boolean existsByCategoryId(Long catId);
@@ -20,8 +21,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(State state, String description, String annotation, LocalDateTime rangeStart, LocalDateTime rangeEnd);
 
-    List<Event> findAllByInitiatorIdContainsAndStateContainsAndCategoryContainsAndCreatedOnAfterOrderByCreatedOn(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime createdOn, Pageable pageable);
+    List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterOrderByCreatedOn(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime createdOn, Pageable pageable);
 
-    List<Event> findAllByInitiatorIdContainsAndStateContainsAndCategoryContainsAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }
 
