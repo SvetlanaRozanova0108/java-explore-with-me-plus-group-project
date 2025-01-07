@@ -80,9 +80,9 @@ public class CompilationServiceImpl implements CompilationService {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Compilation> allCompilations;
         if (pinned == null) {
-            allCompilations = compilationRepository.findAllCompilations(pageRequest);
+            allCompilations = compilationRepository.findAll(pageRequest).toList();
         } else {
-            allCompilations = compilationRepository.findAllCompilationsByPinned(pageRequest, pinned);
+            allCompilations = compilationRepository.findAllByPinned(pageRequest, pinned);
         }
         Map<Long, EventShortDto> allEventDto = mapToEventShort(allCompilations.stream()
                 .flatMap(compilation -> compilation.getEvents().stream()).toList())
@@ -99,7 +99,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
-        Compilation compilation = compilationRepository.findCompilationById(compId)
+        Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка событий с id: " + compId + " не найдена"));
         return CompilationMapper.toCompilationDto(compilation, mapToEventShort(new ArrayList<>(compilation.getEvents())));
     }

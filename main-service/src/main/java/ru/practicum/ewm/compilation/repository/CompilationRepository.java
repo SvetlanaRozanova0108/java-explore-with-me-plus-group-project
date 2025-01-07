@@ -11,12 +11,5 @@ import java.util.Optional;
 
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
-    @Query("select c from Compilation c join fetch events where c.pinned = :pinned")
-    List<Compilation> findAllCompilationsByPinned(Pageable pageable, @Param("pinned") Boolean pinned);
-
-    @Query("select c from Compilation c join fetch events")
-    List<Compilation> findAllCompilations(Pageable pageable);
-
-    @Query("select c from Compilation c join fetch events where c.id = :id")
-    Optional<Compilation> findCompilationById(@Param("id") Long id);
+    List<Compilation> findAllByPinned(Pageable pageable, Boolean pinned);
 }
