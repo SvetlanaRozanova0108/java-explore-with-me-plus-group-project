@@ -14,6 +14,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Boolean existsByCategoryId(Long catId);
 
+    List<Event> findAllByIdIn(List<Long> eventIds);
+
     List<Event> findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterOrderByCreatedOn(State state, String description, String annotation, LocalDateTime createdOn);
 
     List<Event> findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(State state, String description, String annotation, LocalDateTime rangeStart, LocalDateTime rangeEnd);
