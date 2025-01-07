@@ -116,12 +116,11 @@ public class CompilationServiceImpl implements CompilationService {
         if (events.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Event> sortedEvents = events.stream().sorted(Comparator.comparing(Event::getCreatedOn)).toList();
+        LocalDateTime minTime = events.stream().map(Event::getCreatedOn).min(Comparator.comparing(Function.identity())).get();
         List<String> urisList = events.stream().map(event -> "/event/" + event.getId()).toList();
         String uris = String.join(", ", urisList);
-        List<StatsDto> statsList = statClient.getStats(sortedEvents.getFirst().getCreatedOn(),
-                LocalDateTime.now(), uris, false);
-        return sortedEvents.stream().map(event -> {
+        List<StatsDto> statsList = statClient.getStats(minTime, LocalDateTime.now(), uris, false);
+        return events.stream().map(event -> {
                     Optional<StatsDto> result = statsList.stream()
                             .filter(statsDto -> statsDto.getUri().equals("/events/" + event.getId()))
                             .findFirst();
