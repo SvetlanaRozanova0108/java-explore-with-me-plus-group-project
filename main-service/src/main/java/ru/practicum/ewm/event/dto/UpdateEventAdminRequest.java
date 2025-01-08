@@ -43,6 +43,6 @@ public class UpdateEventAdminRequest {
 
     StateAction stateAction;
 
-    @Size(min = 3, max = 120)
+    @Size(min = 3, max = 120, message = "Для заголовка требуется от 3 до 120 символов.", groups = {UpdateObject.class})
     String title;
 }

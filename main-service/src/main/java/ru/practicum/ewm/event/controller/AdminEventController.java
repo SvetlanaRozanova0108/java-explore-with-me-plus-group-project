@@ -35,8 +35,8 @@ public class AdminEventController {
                                                 @RequestParam(required = false) ArrayList<Integer> categories,
                                                 @RequestParam(required = false) String rangeStart,
                                                 @RequestParam(required = false) String rangeEnd,
-                                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                                @Positive @RequestParam(defaultValue = "10") Integer size) {
+                                                @PositiveOrZero @RequestParam(defaultValue = "0") String from,
+                                                @Positive @RequestParam(defaultValue = "10") String size) {
         log.info("Получение полной информации обо всех событиях подходящих под переданные условия.");
 
         var filter = EventAdminFilter
@@ -44,8 +44,8 @@ public class AdminEventController {
                 .users(users)
                 .states(states)
                 .categories(categories)
-                .from(from)
-                .size(size)
+                .from(Integer.parseInt(from))
+                .size(Integer.parseInt(size))
                 .build();
 
         if (rangeStart != null && rangeEnd != null) {

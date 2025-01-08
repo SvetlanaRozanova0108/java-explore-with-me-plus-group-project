@@ -30,6 +30,7 @@ import ru.practicum.ewm.stats.dto.StatsDto;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -484,7 +485,7 @@ public class EventServiceImpl implements EventService {
 
         LocalDateTime now = LocalDateTime.now().plusHours(plusOne);
         if (now.isAfter(newDateTime)) {
-            throw new OperationFailedException(String.format("Дата начала события должна быть позже текущего времени на %s ч.", plusOne));
+            throw new InvalidDateTimeException(String.format("Дата начала события должна быть позже текущего времени на %s ч.", plusOne));
         }
     }
 

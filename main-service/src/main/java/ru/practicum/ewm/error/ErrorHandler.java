@@ -41,7 +41,7 @@ public class ErrorHandler {
     @ExceptionHandler(InvalidDateTimeException.class)
     public ErrorResponse handleConflictDataException(InvalidDateTimeException e) {
         String message = e.getMessage();
-        log.debug("Получен статус 409 CONFLICT {}", message, e);
+        log.debug("Получен статус 400 BAD_REQUEST {}", message, e);
         return new ErrorResponse(message);
     }
 
@@ -49,7 +49,7 @@ public class ErrorHandler {
     @ExceptionHandler(NotFoundRecordInBDException.class)
     public ErrorResponse handleConflictDataException(NotFoundRecordInBDException e) {
         String message = e.getMessage();
-        log.debug("Получен статус 409 CONFLICT {}", message, e);
+        log.debug("Получен статус 400 BAD_REQUEST {}", message, e);
         return new ErrorResponse(message);
     }
 
@@ -57,7 +57,7 @@ public class ErrorHandler {
     @ExceptionHandler(InvalidSortException.class)
     public ErrorResponse handleConflictDataException(InvalidSortException e) {
         String message = e.getMessage();
-        log.debug("Получен статус 409 CONFLICT {}", message, e);
+        log.debug("Получен статус 400 BAD_REQUEST {}", message, e);
         return new ErrorResponse(message);
     }
 
