@@ -5,12 +5,14 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.UpdateObject;
 import ru.practicum.ewm.event.dto.EventAdminFilter;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.event.enums.State;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.InvalidDateTimeException;
 
@@ -31,12 +33,12 @@ public class AdminEventController {
 
     @GetMapping
     public List<EventFullDto> getEventsForAdmin(@RequestParam(required = false) ArrayList<Integer> users,
-                                                @RequestParam(required = false) ArrayList<String> states,
+                                                @RequestParam(required = false) List<State> states,
                                                 @RequestParam(required = false) ArrayList<Integer> categories,
-                                                @RequestParam(required = false) String rangeStart,
-                                                @RequestParam(required = false) String rangeEnd,
-                                                @PositiveOrZero @RequestParam(defaultValue = "0") String from,
-                                                @Positive @RequestParam(defaultValue = "10") String size) {
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                @RequestParam(defaultValue = "0") String from,
+                                                @RequestParam(defaultValue = "10") String size) {
         log.info("Получение полной информации обо всех событиях подходящих под переданные условия.");
 
         var filter = EventAdminFilter
@@ -49,8 +51,8 @@ public class AdminEventController {
                 .build();
 
         if (rangeStart != null && rangeEnd != null) {
-            filter.setRangeStart(LocalDateTime.parse(rangeStart, dateTimeFormatter));
-            filter.setRangeEnd(LocalDateTime.parse(rangeEnd, dateTimeFormatter));
+            filter.setRangeStart(rangeStart);
+            filter.setRangeEnd(rangeEnd);
             if (!filter.getRangeStart().isBefore(filter.getRangeEnd())) {
                 throw new InvalidDateTimeException("Дата окончания события не может быть раньше даты начала события.");
             }

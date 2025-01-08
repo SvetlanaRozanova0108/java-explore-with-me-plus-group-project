@@ -30,7 +30,6 @@ import ru.practicum.ewm.stats.dto.StatsDto;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -78,7 +77,7 @@ public class EventServiceImpl implements EventService {
 
         List<String> urisList = events
                 .stream()
-                .map(event -> "/event/" + event.getId())
+                .map(event -> "/events/" + event.getId())
                 .toList();
 
         String uris = String.join(", ", urisList);
@@ -185,12 +184,14 @@ public class EventServiceImpl implements EventService {
         inputFilter.setText("%" + inputFilter.getText().trim().toLowerCase() + "%");
         List<Event> events;
 
+        var participantLimit = inputFilter.getOnlyAvailable() ? 0 : Integer.MIN_VALUE;
+
         if (inputFilter.getRangeStart() == null && inputFilter.getRangeEnd() == null) {
             events = eventRepository
-                    .findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterOrderByCreatedOn(State.PUBLISHED, inputFilter.getText(), inputFilter.getText(), LocalDateTime.now());
+                    .findAllByStateAndDescriptionContainsOrAnnotationContainsAndEventDateAfterAndPaidAndParticipantLimitGreaterThanOrderByCreatedOn(State.PUBLISHED, inputFilter.getText(), inputFilter.getText(), LocalDateTime.now(), inputFilter.getPaid(), participantLimit);
         } else {
             events = eventRepository
-                    .findAllByStateAndDescriptionLikeAndAnnotationLikeAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(State.PUBLISHED, inputFilter.getText(), inputFilter.getText(), inputFilter.getRangeStart(), inputFilter.getRangeEnd());
+                    .getPublicEventsByFilter(inputFilter.getText(), inputFilter.getRangeStart(), inputFilter.getRangeEnd(), inputFilter.getPaid(), participantLimit);
         }
         if (events == null || events.isEmpty()) {
             return new ArrayList<EventShortDto>();
@@ -198,7 +199,7 @@ public class EventServiceImpl implements EventService {
 
         List<String> urisList = events
                 .stream()
-                .map(event -> "/event/" + event.getId())
+                .map(event -> "/events/" + event.getId())
                 .toList();
 
         String uris = String.join(", ", urisList);
@@ -234,14 +235,11 @@ public class EventServiceImpl implements EventService {
         var ids = result.stream().map(EventShortDto::getId).toList();
         Map<Long, List<ParticipationRequest>> confirmedRequests = requestService.prepareConfirmedRequests(ids);
 
-        result = result
-                .stream()
-                .peek(r -> {
+        result.forEach(r -> {
                     var requests = confirmedRequests.get(r.getId());
 
                     r.setConfirmedRequests(requests != null ? requests.size() : 0);
-                })
-                .toList();
+        });
 
         try {
             EndpointHitDto requestBody = EndpointHitDto
@@ -271,7 +269,7 @@ public class EventServiceImpl implements EventService {
 
 
         Optional<StatsDto> stat = statClient.getStats(event.getCreatedOn(),
-                        LocalDateTime.now(), "/event/" + event.getId(), false).stream()
+                        LocalDateTime.now(), "/events/" + event.getId(), false).stream()
                 .findFirst();
 
         EventFullDto result = EventMapper.mapToFullDto(event, stat.isPresent() ? stat.get().getHits() : 0L);
@@ -286,6 +284,7 @@ public class EventServiceImpl implements EventService {
                     .uri(httpServletRequest.getRequestURI())
                     .timestamp(LocalDateTime.now())
                     .build();
+
             statClient.saveHit(requestBody);
             log.info("Сохранение статистики.");
         } catch (SaveStatsException e) {
@@ -299,22 +298,27 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> getEventsForAdmin(EventAdminFilter input) {
 
-        Pageable pageable = PageRequest.of(input.getFrom(), input.getSize());
+        Pageable pageable = PageRequest.of(input.getFrom() / input.getSize(), input.getSize());
         List<Event> events;
+
+        var states = input.getStates()
+                .stream()
+                .map(state -> state.toString())
+                .toList();
 
         if (input.getRangeStart() == null && input.getRangeEnd() == null) {
             events = eventRepository
-                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), LocalDateTime.now(), pageable);
+                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterOrderByCreatedOn(input.getUsers(), states, input.getCategories(), LocalDateTime.now(), pageable);
         } else {
             events = eventRepository
-                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(input.getUsers(), input.getStates(), input.getCategories(), input.getRangeStart(), input.getRangeEnd(), pageable);
+                    .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterAndCreatedOnBeforeOrderByCreatedOn(input.getUsers(), states, input.getCategories(), input.getRangeStart(), input.getRangeEnd(), pageable);
         }
         if (events == null || events.isEmpty()) {
             return new ArrayList<EventFullDto>();
         }
         List<String> urisList = events
                 .stream()
-                .map(event -> "/event/" + event.getId())
+                .map(event -> "/events/" + event.getId())
                 .toList();
 
         String uris = String.join(", ", urisList);
@@ -360,7 +364,7 @@ public class EventServiceImpl implements EventService {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
         if (updateEventAdminRequest.getEventDate() != null) {
-            checkDateEvent(updateEventAdminRequest.getEventDate(), 1);
+            checkDateEvent(updateEventAdminRequest.getEventDate());
             event.setEventDate(updateEventAdminRequest.getEventDate());
         }
         if (updateEventAdminRequest.getLocation() != null) {
@@ -395,7 +399,7 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
 
         Optional<StatsDto> stat = statClient.getStats(event.getCreatedOn(),
-                        LocalDateTime.now(), "/event/" + event.getId(), false).stream()
+                        LocalDateTime.now(), "/events/" + event.getId(), false).stream()
                 .findFirst();
 
         EventFullDto result = EventMapper.mapToFullDto(event, stat.isPresent() ? stat.get().getHits() : 0L);
@@ -481,11 +485,11 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void checkDateEvent(LocalDateTime newDateTime, int plusOne) {
+    private void checkDateEvent(LocalDateTime newDateTime) {
 
-        LocalDateTime now = LocalDateTime.now().plusHours(plusOne);
+        LocalDateTime now = LocalDateTime.now().plusHours(1);
         if (now.isAfter(newDateTime)) {
-            throw new InvalidDateTimeException(String.format("Дата начала события должна быть позже текущего времени на %s ч.", plusOne));
+            throw new InvalidDateTimeException(String.format("Дата начала события должна быть позже текущего времени на %s ч.", 1));
         }
     }
 

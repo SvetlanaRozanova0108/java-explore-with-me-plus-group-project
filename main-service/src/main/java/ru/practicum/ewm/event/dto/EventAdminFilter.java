@@ -15,10 +15,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventAdminFilter {
     List<Integer> users;
-    List<String> states;
+    List<State> states;
     List<Integer> categories;
     LocalDateTime rangeStart;
     LocalDateTime rangeEnd;
+    Boolean paid;
+    Boolean onlyAvailable;
     Integer from;
     Integer size;
 }

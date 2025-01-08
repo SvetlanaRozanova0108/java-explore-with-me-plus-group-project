@@ -34,8 +34,8 @@ public class PublicEventController {
                                                   @RequestParam(name = "text", defaultValue = "") String text,
                                                   @RequestParam(name = "categories", required = false) ArrayList<Integer> categories,
                                                   @RequestParam(name = "paid", required = false) Boolean paid,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String rangeStart,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String rangeEnd,
+                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                   @RequestParam(name = "onlyAvailable", defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam(name = "sort", defaultValue = "EVENT_DATE") String sort,
                                                   @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
@@ -45,8 +45,8 @@ public class PublicEventController {
 
          var filter = new EventPublicFilter();
          if (rangeStart != null && rangeEnd != null) {
-             filter.setRangeStart(LocalDateTime.parse(rangeStart, dateTimeFormatter));
-             filter.setRangeEnd(LocalDateTime.parse(rangeEnd, dateTimeFormatter));
+             filter.setRangeStart(rangeStart);
+             filter.setRangeEnd(rangeEnd);
              if (!filter.getRangeStart().isBefore(filter.getRangeEnd())) {
                  throw new InvalidDateTimeException("Дата окончания события не может быть раньше даты начала события.");
              }
@@ -64,6 +64,7 @@ public class PublicEventController {
          filter.setCategories(categories);
          filter.setPaid(paid);
          filter.setOnlyAvailable(onlyAvailable);
+
          try {
              return eventService.getPublicEventsByFilter(httpServletRequest, filter);
          } catch (Exception e) {
