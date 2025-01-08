@@ -27,14 +27,14 @@ import java.util.List;
 public class AdminEventController {
 
     private final EventService eventService;
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping
     public List<EventFullDto> getEventsForAdmin(@RequestParam(required = false) ArrayList<Integer> users,
                                                 @RequestParam(required = false) List<State> states,
                                                 @RequestParam(required = false) ArrayList<Integer> categories,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeStart,
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeEnd,
                                                 @RequestParam(defaultValue = "0") String from,
                                                 @RequestParam(defaultValue = "10") String size) {
         log.info("Получение полной информации обо всех событиях подходящих под переданные условия.");

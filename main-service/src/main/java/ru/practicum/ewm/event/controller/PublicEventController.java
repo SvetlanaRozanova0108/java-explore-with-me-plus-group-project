@@ -27,15 +27,15 @@ import java.util.List;
 public class PublicEventController {
 
     private final EventService eventService;
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
      @GetMapping
      public List<EventShortDto> getEventsByFilter(HttpServletRequest httpServletRequest,
                                                   @RequestParam(name = "text", defaultValue = "") String text,
                                                   @RequestParam(name = "categories", required = false) ArrayList<Integer> categories,
                                                   @RequestParam(name = "paid", required = false) Boolean paid,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                  @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeStart,
+                                                  @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeEnd,
                                                   @RequestParam(name = "onlyAvailable", defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam(name = "sort", defaultValue = "EVENT_DATE") String sort,
                                                   @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
