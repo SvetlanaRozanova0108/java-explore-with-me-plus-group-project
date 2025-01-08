@@ -22,7 +22,7 @@ public class Event {
     @Column(name = "event_id")
     Long id;
 
-    @Column(name = "annotation", length = 1000)
+    @Column(name = "annotation", length = 2000)
     String annotation;
 
     @ManyToOne
