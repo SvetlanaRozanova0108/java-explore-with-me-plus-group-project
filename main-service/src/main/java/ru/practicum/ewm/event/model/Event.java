@@ -1,7 +1,5 @@
 package ru.practicum.ewm.event.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.ewm.category.model.Category;

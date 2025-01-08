@@ -212,7 +212,7 @@ public class EventServiceImpl implements EventService {
                     Optional<StatsDto> stat = statsList.stream()
                             .filter(statsDto -> statsDto.getUri().equals("/events/" + event.getId()))
                             .findFirst();
-                    return EventMapper.mapToShortDto(event, stat.isPresent() ? stat.get().getHits(): 0L);
+                    return EventMapper.mapToShortDto(event, stat.isPresent() ? stat.get().getHits() : 0L);
                 })
                 .toList();
 
@@ -333,7 +333,7 @@ public class EventServiceImpl implements EventService {
                             .filter(statsDto -> statsDto.getUri().equals("/events/" + event.getId()))
                             .findFirst();
                     var requests = confirmedRequests.get(event.getId());
-                    var r =  EventMapper.mapToFullDto(event, stat.isPresent() ? stat.get().getHits(): 0L);
+                    var r =  EventMapper.mapToFullDto(event, stat.isPresent() ? stat.get().getHits() : 0L);
 
                     r.setConfirmedRequests(requests != null ? requests.size() : 0);
                     return r;

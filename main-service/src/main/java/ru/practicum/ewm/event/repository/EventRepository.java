@@ -18,7 +18,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByIdIn(List<Long> eventIds);
 
-    List<Event> findAllByStateAndDescriptionContainsOrAnnotationContainsAndEventDateAfterAndPaidAndParticipantLimitGreaterThanOrderByCreatedOn(State state, String description, String annotation, LocalDateTime createdOn, Boolean paid, Integer ParticipantLimit);
+    List<Event> findAllByStateAndDescriptionContainsOrAnnotationContainsAndEventDateAfterAndPaidAndParticipantLimitGreaterThanOrderByCreatedOn(State state, String description, String annotation, LocalDateTime createdOn, Boolean paid, Integer participantLimit);
 
     @Query("select e FROM Event e " +
             " where e.state ='PUBLISHED' " +
