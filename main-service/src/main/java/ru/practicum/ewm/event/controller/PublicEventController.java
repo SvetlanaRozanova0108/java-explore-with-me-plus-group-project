@@ -16,7 +16,6 @@ import ru.practicum.ewm.exception.InvalidDateTimeException;
 import ru.practicum.ewm.exception.InvalidSortException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 

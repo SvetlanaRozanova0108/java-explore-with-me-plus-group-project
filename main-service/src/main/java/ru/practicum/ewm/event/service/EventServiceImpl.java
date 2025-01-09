@@ -300,12 +300,14 @@ public class EventServiceImpl implements EventService {
 
         Pageable pageable = PageRequest.of(input.getFrom() / input.getSize(), input.getSize());
         List<Event> events;
+        List<String> states = List.of();
 
-        var states = input.getStates()
-                .stream()
-                .map(state -> state.toString())
-                .toList();
-
+        if (input.getStates() != null) {
+            states = input.getStates()
+                    .stream()
+                    .map(Enum::toString)
+                    .toList();
+        }
         if (input.getRangeStart() == null && input.getRangeEnd() == null) {
             events = eventRepository
                     .findAllByInitiatorIdInAndStateInAndCategoryIdInAndCreatedOnAfterOrderByCreatedOn(input.getUsers(), states, input.getCategories(), LocalDateTime.now(), pageable);

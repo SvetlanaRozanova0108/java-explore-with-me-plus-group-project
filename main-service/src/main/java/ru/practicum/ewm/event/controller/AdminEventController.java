@@ -1,5 +1,6 @@
 package ru.practicum.ewm.event.controller;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.InvalidDateTimeException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class AdminEventController {
                                                 @RequestParam(required = false) ArrayList<Integer> categories,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeStart,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeEnd,
-                                                @RequestParam(defaultValue = "0") String from,
-                                                @RequestParam(defaultValue = "10") String size) {
+                                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получение полной информации обо всех событиях подходящих под переданные условия.");
 
         var filter = EventAdminFilter
@@ -44,8 +44,8 @@ public class AdminEventController {
                 .users(users)
                 .states(states)
                 .categories(categories)
-                .from(Integer.parseInt(from))
-                .size(Integer.parseInt(size))
+                .from(from)
+                .size(size)
                 .build();
 
         if (rangeStart != null && rangeEnd != null) {
