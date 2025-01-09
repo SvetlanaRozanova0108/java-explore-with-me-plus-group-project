@@ -453,7 +453,6 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequest> confirmedRequestsList = new ArrayList<>();
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
         if (event.getRequestModeration() && event.getParticipantLimit() != 0) {
-            EventRequestStatusUpdateResult statusUpdateResult = new EventRequestStatusUpdateResult();
             switch (updateRequest.getStatus()) {
                 case CONFIRMED -> requestList.forEach(request -> {
                     if (request.getStatus() != Status.PENDING) {
