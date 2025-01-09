@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class EventShortDto {
     Long id;
     String annotation;
@@ -20,6 +21,7 @@ public class EventShortDto {
     Integer confirmedRequests;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
+    LocalDateTime publishedOn;
     UserShortDto initiator;
     Boolean paid;
     String title;

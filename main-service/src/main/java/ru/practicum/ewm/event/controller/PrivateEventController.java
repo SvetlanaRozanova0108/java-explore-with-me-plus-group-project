@@ -50,7 +50,7 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public List<ParticipationRequestDto> updateRequestsStatus(@PathVariable Long userId, @PathVariable Long eventId,
+    public EventRequestStatusUpdateResult updateRequestsStatus(@PathVariable Long userId, @PathVariable Long eventId,
                                                               @Valid @RequestBody
                                                               EventRequestStatusUpdateRequest updateRequest) {
         log.info("Получили запрос на обновление статусов заявок");
