@@ -207,7 +207,7 @@ public class EventServiceImpl implements EventService {
         List<StatsDto> statsList = statClient.getStats(events.getFirst().getCreatedOn(),
                 LocalDateTime.now(), uris, false);
 
-        var result = events.stream().map(event -> {
+        List<EventShortDto> result = events.stream().map(event -> {
 
                     Optional<StatsDto> stat = statsList.stream()
                             .filter(statsDto -> statsDto.getUri().equals("/events/" + event.getId()))
@@ -215,24 +215,25 @@ public class EventServiceImpl implements EventService {
                     return EventMapper.mapToShortDto(event, stat.isPresent() ? stat.get().getHits() : 0L);
                 })
                 .toList();
+        List<EventShortDto> resultList = new ArrayList<>(result);
 
         switch (inputFilter.getSort()) {
             case EVENT_DATE:
-                result.sort(Comparator.comparing(EventShortDto::getEventDate));
+                resultList.sort(Comparator.comparing(EventShortDto::getEventDate));
                 break;
             case VIEWS:
-                result.sort(Comparator.comparing(EventShortDto::getViews));
+                resultList.sort(Comparator.comparing(EventShortDto::getViews));
                 break;
             default:
                 throw new InvalidSortException(String.format("SortType = %s не определен.", inputFilter.getSort()));
         }
 
-        result = result
+        resultList = result
                 .stream()
                 .skip(inputFilter.getFrom())
                 .limit(inputFilter.getSize())
                 .toList();
-        var ids = result.stream().map(EventShortDto::getId).toList();
+        var ids = resultList.stream().map(EventShortDto::getId).toList();
         Map<Long, List<ParticipationRequest>> confirmedRequests = requestService.prepareConfirmedRequests(ids);
 
         result.forEach(r -> {

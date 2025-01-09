@@ -70,7 +70,6 @@ public class PublicEventController {
              log.error("При запуске с параметрами " + filter, e);
              throw e;
          }
-
      }
 
      @GetMapping("/{id}")
