@@ -10,6 +10,7 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictDataException;
 import ru.practicum.ewm.exception.DuplicateException;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.partrequest.dto.ParticipationRequestDto;
 import ru.practicum.ewm.partrequest.enums.Status;
 import ru.practicum.ewm.partrequest.mapper.ParticipationRequestMapper;
@@ -35,6 +36,10 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Transactional
     @Override
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
+        if (eventId == 0) {
+            throw new ValidationException("Не задано id события");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь c id: " + userId + " не найден"));
         Event event = eventRepository.findById(eventId)

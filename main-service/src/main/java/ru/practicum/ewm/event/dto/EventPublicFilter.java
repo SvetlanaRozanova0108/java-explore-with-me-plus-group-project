@@ -15,7 +15,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventPublicFilter {
     String text;
-    List<Integer> categories;
+    List<Long> categories;
     Boolean paid;
     LocalDateTime rangeStart;
     LocalDateTime rangeEnd;

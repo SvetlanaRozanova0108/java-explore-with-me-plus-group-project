@@ -16,7 +16,6 @@ import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.InvalidDateTimeException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,13 +29,14 @@ public class AdminEventController {
     private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping
-    public List<EventFullDto> getEventsForAdmin(@RequestParam(required = false) ArrayList<Integer> users,
-                                                @RequestParam(required = false) List<State> states,
-                                                @RequestParam(required = false) ArrayList<Integer> categories,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeStart,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeEnd,
-                                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                                @Positive @RequestParam(defaultValue = "10") Integer size) {
+    public List<EventFullDto>
+    getEventsForAdmin(@RequestParam(required = false) List<Long> users,
+                      @RequestParam(required = false) List<State> states,
+                      @RequestParam(required = false) List<Long> categories,
+                      @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeStart,
+                      @RequestParam(required = false) @DateTimeFormat(pattern = TIME_PATTERN) LocalDateTime rangeEnd,
+                      @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                      @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получение полной информации обо всех событиях подходящих под переданные условия.");
 
         var filter = EventAdminFilter
