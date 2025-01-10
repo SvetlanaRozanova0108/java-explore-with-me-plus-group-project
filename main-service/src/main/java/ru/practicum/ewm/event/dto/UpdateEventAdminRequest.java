@@ -12,6 +12,8 @@ import ru.practicum.ewm.event.model.Location;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.utils.date.DateTimeFormat.TIME_PATTERN;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,7 +29,7 @@ public class UpdateEventAdminRequest {
     @Size(min = 20, max = 7000, message = "Для описания требуется от 20 до 7000 символов.", groups = {UpdateObject.class})
     String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = TIME_PATTERN)
     LocalDateTime eventDate;
 
     @Embedded
