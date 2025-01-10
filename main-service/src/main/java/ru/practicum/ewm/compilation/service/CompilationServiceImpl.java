@@ -34,10 +34,10 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
-        List<Long> eventIds = newCompilationDto.getEvents();
+        Set<Long> eventIds = newCompilationDto.getEvents();
         List<Event> events;
         if (eventIds != null && !eventIds.isEmpty()) {
-            events = getSeveralEvents(eventIds);
+            events = getSeveralEvents(eventIds.stream().toList());
         } else {
             events = Collections.emptyList();
         }
@@ -54,9 +54,9 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id: " + compId + " не найдена"));
-        List<Long> eventIds = updateCompilationRequest.getEvents();
+        Set<Long> eventIds = updateCompilationRequest.getEvents();
         if (eventIds != null && !eventIds.isEmpty()) {
-            compilation.setEvents(new HashSet<>(getSeveralEvents(eventIds)));
+            compilation.setEvents(new HashSet<>(getSeveralEvents(eventIds.stream().toList())));
         }
         Boolean pinned = updateCompilationRequest.getPinned();
         if (pinned != null) {

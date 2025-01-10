@@ -3,11 +3,13 @@ package ru.practicum.ewm.category.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
+import ru.practicum.ewm.exception.DuplicateException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +37,10 @@ public class AdminCategoryController {
     public CategoryDto updateCategory(@RequestBody @Valid CategoryDto categoryDto,
                                       @PathVariable Long catId) {
         log.info("Пришел запрос на обновление категории.");
-        return categoryService.updateCategory(categoryDto, catId);
+        try {
+            return categoryService.updateCategory(categoryDto, catId);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Категория с таким именем уже существует");
+        }
     }
 }

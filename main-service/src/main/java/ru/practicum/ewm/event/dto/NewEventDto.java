@@ -8,6 +8,8 @@ import ru.practicum.ewm.event.model.Location;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.utils.date.DateTimeFormat.TIME_PATTERN;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
@@ -22,7 +24,7 @@ public class NewEventDto {
     @NotBlank
     @Size(min = 20, max = 7000)
     String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = TIME_PATTERN)
     @Future
     @NotNull
     LocalDateTime eventDate;

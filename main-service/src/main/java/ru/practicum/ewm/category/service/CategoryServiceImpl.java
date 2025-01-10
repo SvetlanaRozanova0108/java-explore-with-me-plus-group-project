@@ -1,6 +1,7 @@
 package ru.practicum.ewm.category.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +29,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
-        if (categoryRepository.existsByName(newCategoryDto.getName())) {
+        try {
+            Category category = categoryRepository.save(CategoryMapper.toCategory(newCategoryDto));
+            return CategoryMapper.toCategoryDto(category);
+        } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Категория с таким именем уже существует");
         }
-        Category category = categoryRepository.save(CategoryMapper.toCategory(newCategoryDto));
-        return CategoryMapper.toCategoryDto(category);
     }
 
     @Transactional
@@ -53,9 +55,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = checkCategory(catId);
 
         if (!category.getName().equals(categoryDto.getName())) {
-            if (categoryRepository.existsByName(categoryDto.getName())) {
-                throw new DuplicateException("Категория с таким именем уже существует");
-            }
             category.setName(categoryDto.getName());
         }
 

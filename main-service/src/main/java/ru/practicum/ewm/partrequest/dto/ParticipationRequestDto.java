@@ -7,6 +7,8 @@ import ru.practicum.ewm.partrequest.enums.Status;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.utils.date.DateTimeFormat.TIME_PATTERN;
+
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ParticipationRequestDto {
     Long id;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = TIME_PATTERN)
     LocalDateTime created;
     Long event;
     Long requester;

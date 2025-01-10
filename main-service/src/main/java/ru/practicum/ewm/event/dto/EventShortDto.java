@@ -8,6 +8,8 @@ import ru.practicum.ewm.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.utils.date.DateTimeFormat.TIME_PATTERN;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class EventShortDto {
     String annotation;
     CategoryDto category;
     Integer confirmedRequests;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = TIME_PATTERN)
     LocalDateTime eventDate;
     LocalDateTime publishedOn;
     UserShortDto initiator;

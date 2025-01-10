@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewCompilationDto {
-    List<Long> events;
+    Set<Long> events;
     Boolean pinned;
     @NotBlank
     @Size(min = 1, max = 50)

@@ -17,6 +17,8 @@ import ru.practicum.ewm.exception.InvalidDateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.ewm.utils.date.DateTimeFormat.TIME_PATTERN;
+
 @Slf4j
 @AllArgsConstructor
 @RestController
@@ -24,7 +26,6 @@ import java.util.List;
 public class PublicEventController {
 
     private final EventService eventService;
-    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping
     public List<EventShortDto>
