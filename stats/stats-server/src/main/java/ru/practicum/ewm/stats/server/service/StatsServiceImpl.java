@@ -1,5 +1,6 @@
 package ru.practicum.ewm.stats.server.service;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,10 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start.isAfter(end)) {
+            throw new ValidationException("End не может быть раньше start");
+        }
+
         if (!uris.isEmpty() && unique) {
             return statsRepository.getStatsByUriWithUniqueIp(start, end, uris);
         } else if (uris.isEmpty() && unique) {
