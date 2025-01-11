@@ -13,8 +13,8 @@ import ru.practicum.ewm.comment.service.CommentService;
 @RequestMapping("/users/{userId}/comments")
 @Slf4j
 public class PrivateCommentController {
-
     private final CommentService commentService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@PathVariable Long userId,
@@ -29,7 +29,7 @@ public class PrivateCommentController {
                                     @PathVariable Long commentId,
                                     @RequestBody NewCommentDto newCommentDto) {
         log.info("Получили запрос на редактирование комментария {}", newCommentDto);
-        return commentService.createComment(userId, commentId, newCommentDto);
+        return commentService.updateComment(userId, commentId, newCommentDto);
     }
 
     @DeleteMapping("/{commentId}")
@@ -38,5 +38,15 @@ public class PrivateCommentController {
                               @PathVariable Long commentId) {
         log.info("Получили запрос на удаление комментария");
         commentService.deleteComment(userId, commentId);
+    }
+
+    @PutMapping("/{commentId}/like")
+    public CommentDto addLike(@PathVariable Long userId, @PathVariable Long commentId) {
+        return commentService.addLike(userId, commentId);
+    }
+
+    @DeleteMapping("/{commentId}/like")
+    public void deleteLike(@PathVariable Long userId, @PathVariable Long commentId) {
+        commentService.deleteLike(userId, commentId);
     }
 }

@@ -3,10 +3,10 @@ package ru.practicum.ewm.comment.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.user.model.User;
+import ru.practicum.ewm.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -20,5 +20,6 @@ public class CommentDto {
     Long eventId;
     String eventName;
     String authorName;
+    Integer likes;
     LocalDateTime created;
 }

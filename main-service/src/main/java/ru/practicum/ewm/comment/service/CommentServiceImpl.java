@@ -2,10 +2,14 @@ package ru.practicum.ewm.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.comment.dto.CommentDto;
 import ru.practicum.ewm.comment.dto.NewCommentDto;
+import ru.practicum.ewm.comment.enums.SortType;
 import ru.practicum.ewm.comment.mapper.CommentMapper;
 import ru.practicum.ewm.comment.model.Comment;
 import ru.practicum.ewm.comment.repository.CommentRepository;
@@ -13,10 +17,13 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.user.mapper.UserMapper;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
 
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -48,8 +55,6 @@ public class CommentServiceImpl implements CommentService {
         } else {
             throw new ValidationException("Пользователь не оставлял комментарий с указанным Id " + commentId);
         }
-
-
         return CommentMapper.toCommentDto(comment);
     }
 
@@ -66,11 +71,43 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> getAllComments(Long eventId) {
-        return commentRepository.findAllByEvent_Id(eventId)
+    public List<CommentDto> getAllComments(Long eventId, SortType sortType, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from/size, size);
+        List<CommentDto> comments = commentRepository.findAllByEvent_Id(eventId, pageable)
                 .stream()
                 .map(CommentMapper::toCommentDto)
                 .toList();
+        if (sortType == SortType.LIKES) {
+            return comments.stream().sorted(Comparator.comparing(CommentDto::getLikes).reversed()).toList();
+        } else {
+            return comments.stream().sorted(Comparator.comparing(CommentDto::getCreated).reversed()).toList();
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommentDto addLike(Long userId, Long commentId) {
+        User commentator = checkUser(userId);
+        Comment comment = checkComment(commentId);
+        if (comment.getAuthor().getId().equals(userId)) {
+            throw new ValidationException("Пользователь не может лайкать свой комментарий");
+        }
+        if (comment.getLikes().stream().anyMatch(user -> user.getId().equals(userId))) {
+            throw new ValidationException("Пользователь уже пролайкал комментарий с id: " + commentId);
+        }
+        comment.getLikes().add(commentator);
+        return CommentMapper.toCommentDto(comment);
+    }
+
+    @Transactional
+    @Override
+    public void deleteLike(Long userId, Long commentId) {
+        User commentator = checkUser(userId);
+        Comment comment = checkComment(commentId);
+        if (comment.getLikes().stream().noneMatch(user -> user.getId().equals(userId))) {
+            throw new NotFoundException("Пользователь не лайкал комментарий с id: " + commentId);
+        }
+        comment.getLikes().remove(commentator);
     }
 
     private User checkUser(Long userId) {

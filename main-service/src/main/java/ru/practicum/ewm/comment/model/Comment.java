@@ -8,6 +8,7 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -33,6 +34,9 @@ public class Comment {
     @OneToOne
     @JoinColumn(name = "author_id")
     User author;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    Set<User> likes;
     LocalDateTime created;
 }
