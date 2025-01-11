@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.comment.dto.CommentDto;
@@ -17,13 +16,13 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.user.dto.UserDtoForAdmin;
 import ru.practicum.ewm.user.mapper.UserMapper;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -41,6 +40,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto createComment(Long eventId, Long userId, NewCommentDto newCommentDto) {
         Event event = checkEvent(eventId);
         User user = checkUser(userId);
+        if (user.getForbiddenCommentEvents().contains(event)) {
+           throw new ValidationException("Для данного пользователя стоит запрет на комментирование данной вещи");
+        }
         if (!event.getCommenting()) {
             throw new ValidationException("Данное событие нельзя комментировать");
         }
@@ -107,10 +109,32 @@ public class CommentServiceImpl implements CommentService {
     public void deleteLike(Long userId, Long commentId) {
         User commentator = checkUser(userId);
         Comment comment = checkComment(commentId);
-        if (comment.getLikes().stream().noneMatch(user -> user.getId().equals(userId))) {
+        if (!comment.getLikes().remove(commentator)) {
             throw new NotFoundException("Пользователь не лайкал комментарий с id: " + commentId);
         }
-        comment.getLikes().remove(commentator);
+    }
+
+    @Transactional
+    @Override
+    public UserDtoForAdmin addBanCommited(Long userId, Long eventId) {
+        User user = checkUser(userId);
+        Event forbidEvent = checkEvent(eventId);
+        if (user.getForbiddenCommentEvents().stream().anyMatch(event -> event.getId().equals(eventId))) {
+            throw new ValidationException("Уже добавлен такой запрет на комментирование");
+        }
+        user.getForbiddenCommentEvents().add(forbidEvent);
+        return UserMapper.toUserDtoForAdmin(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteBanCommited(Long userId, Long eventId) {
+        User user = checkUser(userId);
+        Event forbidEvent = checkEvent(eventId);
+        if (!user.getForbiddenCommentEvents().remove(forbidEvent)) {
+            throw new NotFoundException("Такого запрета на комментирование не найдено");
+        }
+
     }
 
     private User checkUser(Long userId) {

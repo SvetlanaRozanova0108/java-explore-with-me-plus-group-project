@@ -65,4 +65,10 @@ CREATE TABLE IF NOT EXISTS comments_likes(
     PRIMARY KEY (comment_id, user_id)
 );
 
+CREATE TABLE IF NOT EXISTS ban_comments(
+    event_id BIGINT REFERENCES events(event_id) ON DELETE CASCADE,
+    user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
+    PRIMARY KEY (event_id, user_id)
+);
+
 

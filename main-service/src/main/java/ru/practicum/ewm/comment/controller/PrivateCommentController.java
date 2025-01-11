@@ -42,11 +42,14 @@ public class PrivateCommentController {
 
     @PutMapping("/{commentId}/like")
     public CommentDto addLike(@PathVariable Long userId, @PathVariable Long commentId) {
+        log.info("Получили запрос на добавление лайка");
         return commentService.addLike(userId, commentId);
     }
 
     @DeleteMapping("/{commentId}/like")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLike(@PathVariable Long userId, @PathVariable Long commentId) {
+        log.info("Получили запрос на удаление лайка");
         commentService.deleteLike(userId, commentId);
     }
 }
