@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS events(
     request_moderation BOOLEAN,
     title varchar(120),
     lat FLOAT NOT NULL,
-    lon FLOAT NOT NULL
+    lon FLOAT NOT NULL,
+    commenting BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS participation_requests(

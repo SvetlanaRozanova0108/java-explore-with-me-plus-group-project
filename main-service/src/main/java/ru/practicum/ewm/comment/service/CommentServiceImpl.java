@@ -41,6 +41,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto createComment(Long eventId, Long userId, NewCommentDto newCommentDto) {
         Event event = checkEvent(eventId);
         User user = checkUser(userId);
+        if (!event.getCommenting()) {
+            throw new ValidationException("Данное событие нельзя комментировать");
+        }
         Comment comment = CommentMapper.toComment(newCommentDto, event, user);
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
