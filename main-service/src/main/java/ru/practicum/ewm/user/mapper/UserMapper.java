@@ -8,7 +8,6 @@ import ru.practicum.ewm.user.dto.UserDtoForAdmin;
 import ru.practicum.ewm.user.dto.UserShortDto;
 import ru.practicum.ewm.user.model.User;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 

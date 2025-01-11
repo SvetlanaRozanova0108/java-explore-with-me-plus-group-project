@@ -8,7 +8,6 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 
 @UtilityClass
 public class CommentMapper {
@@ -31,7 +30,6 @@ public class CommentMapper {
                 .event(event)
                 .author(user)
                 .created(LocalDateTime.now())
-                .likes(new HashSet<>())
                 .build();
     }
 }

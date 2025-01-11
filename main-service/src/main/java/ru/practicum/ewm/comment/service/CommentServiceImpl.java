@@ -12,6 +12,7 @@ import ru.practicum.ewm.comment.enums.SortType;
 import ru.practicum.ewm.comment.mapper.CommentMapper;
 import ru.practicum.ewm.comment.model.Comment;
 import ru.practicum.ewm.comment.repository.CommentRepository;
+import ru.practicum.ewm.event.enums.State;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -23,6 +24,7 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +39,16 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto createComment(Long eventId, Long userId, NewCommentDto newCommentDto) {
+        if (eventId == null) {
+            throw new ValidationException("Не задан eventId");
+        }
         Event event = checkEvent(eventId);
+        if (event.getState() != State.PUBLISHED) {
+            throw new ValidationException("Нельзя комментировать не опубликованное событие");
+        }
         User user = checkUser(userId);
         if (user.getForbiddenCommentEvents().contains(event)) {
-            throw new ValidationException("Для данного пользователя стоит запрет на комментирование данной вещи");
+            throw new ValidationException("Для данного пользователя стоит запрет на комментирование данного события");
         }
         if (!event.getCommenting()) {
             throw new ValidationException("Данное событие нельзя комментировать");
@@ -51,10 +59,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public CommentDto updateComment(Long userId, Long commentId, NewCommentDto newCommentDto) {
-        User user = checkUser(userId);
+    public CommentDto updateComment(Long userId, Long eventId, Long commentId, NewCommentDto newCommentDto) {
+        if (eventId == null) {
+            throw new ValidationException("Не задан eventId");
+        }
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Событие не найдено");
+        }
         Comment comment = checkComment(commentId);
-        if (user.getId().equals(comment.getAuthor().getId())) {
+        if (!Objects.equals(comment.getEvent().getId(), eventId)) {
+            throw new ValidationException("Некорректно указан eventId");
+        }
+        if (comment.getAuthor().getId().equals(userId)) {
             comment.setText(newCommentDto.getText());
         } else {
             throw new ValidationException("Пользователь не оставлял комментарий с указанным Id " + commentId);
@@ -64,14 +83,35 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void deleteComment(Long userId, Long commentId) {
-        User user = checkUser(userId);
+    public void deleteComment(Long userId, Long eventId, Long commentId) {
+        if (eventId == null) {
+            throw new ValidationException("Не задан eventId");
+        }
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Событие не найдено");
+        }
         Comment comment = checkComment(commentId);
-        if (user.getId().equals(comment.getAuthor().getId())) {
+        if (!Objects.equals(comment.getEvent().getId(), eventId)) {
+            throw new ValidationException("Некорректно указан eventId");
+        }
+        if (comment.getAuthor().getId().equals(userId)) {
             commentRepository.deleteById(commentId);
         } else {
             throw new ValidationException("Пользователь не оставлял комментарий с указанным Id " + commentId);
         }
+    }
+
+    @Transactional
+    @Override
+    public void deleteComment(Long commentId, Long eventId) {
+        Comment comment = checkComment(commentId);
+        if (!Objects.equals(comment.getEvent().getId(), eventId)) {
+            throw new ValidationException("Некорректно указан eventId");
+        }
+        commentRepository.deleteById(commentId);
     }
 
     @Override
@@ -91,24 +131,27 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto addLike(Long userId, Long commentId) {
-        User commentator = checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         Comment comment = checkComment(commentId);
         if (comment.getAuthor().getId().equals(userId)) {
             throw new ValidationException("Пользователь не может лайкать свой комментарий");
         }
-        if (comment.getLikes().stream().anyMatch(user -> user.getId().equals(userId))) {
-            throw new ValidationException("Пользователь уже пролайкал комментарий с id: " + commentId);
+        if (!comment.getLikes().add(userId)) {
+            throw new ValidationException("Нельзя поставить лайк второй раз");
         }
-        comment.getLikes().add(commentator);
         return CommentMapper.toCommentDto(comment);
     }
 
     @Transactional
     @Override
     public void deleteLike(Long userId, Long commentId) {
-        User commentator = checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         Comment comment = checkComment(commentId);
-        if (!comment.getLikes().remove(commentator)) {
+        if (!comment.getLikes().remove(userId)) {
             throw new NotFoundException("Пользователь не лайкал комментарий с id: " + commentId);
         }
     }

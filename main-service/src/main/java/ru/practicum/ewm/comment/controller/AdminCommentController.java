@@ -27,4 +27,10 @@ public class AdminCommentController {
         commentService.deleteBanCommited(userId, eventId);
     }
 
+    @DeleteMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long commentId, @RequestParam Long eventId) {
+        commentService.deleteComment(commentId, eventId);
+    }
+
 }
