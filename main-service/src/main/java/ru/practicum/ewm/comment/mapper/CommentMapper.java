@@ -5,12 +5,10 @@ import ru.practicum.ewm.comment.dto.CommentDto;
 import ru.practicum.ewm.comment.dto.NewCommentDto;
 import ru.practicum.ewm.comment.model.Comment;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.user.dto.UserShortDto;
 import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Set;
 
 @UtilityClass
 public class CommentMapper {

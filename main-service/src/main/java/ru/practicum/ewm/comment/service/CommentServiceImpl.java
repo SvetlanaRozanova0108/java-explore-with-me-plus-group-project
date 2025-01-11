@@ -21,7 +21,6 @@ import ru.practicum.ewm.user.mapper.UserMapper;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
-
 import java.util.Comparator;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
         Event event = checkEvent(eventId);
         User user = checkUser(userId);
         if (user.getForbiddenCommentEvents().contains(event)) {
-           throw new ValidationException("Для данного пользователя стоит запрет на комментирование данной вещи");
+            throw new ValidationException("Для данного пользователя стоит запрет на комментирование данной вещи");
         }
         if (!event.getCommenting()) {
             throw new ValidationException("Данное событие нельзя комментировать");
@@ -55,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto updateComment(Long userId, Long commentId, NewCommentDto newCommentDto) {
         User user = checkUser(userId);
         Comment comment = checkComment(commentId);
-        if(user.getId().equals(comment.getAuthor().getId())) {
+        if (user.getId().equals(comment.getAuthor().getId())) {
             comment.setText(newCommentDto.getText());
         } else {
             throw new ValidationException("Пользователь не оставлял комментарий с указанным Id " + commentId);
@@ -68,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long userId, Long commentId) {
         User user = checkUser(userId);
         Comment comment = checkComment(commentId);
-        if(user.getId().equals(comment.getAuthor().getId())) {
+        if (user.getId().equals(comment.getAuthor().getId())) {
             commentRepository.deleteById(commentId);
         } else {
             throw new ValidationException("Пользователь не оставлял комментарий с указанным Id " + commentId);
@@ -77,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDto> getAllComments(Long eventId, SortType sortType, Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
         List<CommentDto> comments = commentRepository.findAllByEvent_Id(eventId, pageable)
                 .stream()
                 .map(CommentMapper::toCommentDto)
