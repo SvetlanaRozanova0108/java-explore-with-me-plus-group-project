@@ -17,14 +17,15 @@ public class PrivateCommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@PathVariable Long userId, @RequestParam Long eventId,
+    public CommentDto createComment(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long eventId,
                                     @RequestBody NewCommentDto newCommentDto) {
         log.info("Получили запрос на создание комментария {}", newCommentDto);
         return commentService.createComment(eventId, userId, newCommentDto);
     }
 
     @PatchMapping("/{commentId}")
-    public CommentDto updateComment(@PathVariable Long userId, @PathVariable Long commentId, @RequestParam Long eventId,
+    public CommentDto updateComment(@PathVariable Long userId, @PathVariable Long commentId,
+                                    @RequestParam(defaultValue = "0") Long eventId,
                                     @RequestBody NewCommentDto newCommentDto) {
         log.info("Получили запрос на редактирование комментария {}", newCommentDto);
         return commentService.updateComment(userId, eventId, commentId, newCommentDto);
@@ -32,7 +33,8 @@ public class PrivateCommentController {
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Long userId, @RequestParam Long eventId, @PathVariable Long commentId) {
+    public void deleteComment(@PathVariable Long userId, @PathVariable Long commentId,
+                              @RequestParam(defaultValue = "0") Long eventId) {
         log.info("Получили запрос на удаление комментария");
         commentService.deleteComment(userId, eventId, commentId);
     }

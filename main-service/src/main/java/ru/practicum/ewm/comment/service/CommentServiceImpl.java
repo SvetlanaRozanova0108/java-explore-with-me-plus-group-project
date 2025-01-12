@@ -39,9 +39,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto createComment(Long eventId, Long userId, NewCommentDto newCommentDto) {
-        if (eventId == null) {
-            throw new ValidationException("Не задан eventId");
-        }
+        checkEventId(eventId);
         Event event = checkEvent(eventId);
         if (event.getState() != State.PUBLISHED) {
             throw new ValidationException("Нельзя комментировать не опубликованное событие");
@@ -60,9 +58,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto updateComment(Long userId, Long eventId, Long commentId, NewCommentDto newCommentDto) {
-        if (eventId == null) {
-            throw new ValidationException("Не задан eventId");
-        }
+        checkEventId(eventId);
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -84,9 +80,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void deleteComment(Long userId, Long eventId, Long commentId) {
-        if (eventId == null) {
-            throw new ValidationException("Не задан eventId");
-        }
+        checkEventId(eventId);
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -107,6 +101,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void deleteComment(Long commentId, Long eventId) {
+        checkEventId(eventId);
         Comment comment = checkComment(commentId);
         if (!Objects.equals(comment.getEvent().getId(), eventId)) {
             throw new ValidationException("Некорректно указан eventId");
@@ -159,6 +154,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public UserDtoForAdmin addBanCommited(Long userId, Long eventId) {
+        checkEventId(eventId);
         User user = checkUser(userId);
         Event forbidEvent = checkEvent(eventId);
         if (user.getForbiddenCommentEvents().stream().anyMatch(event -> event.getId().equals(eventId))) {
@@ -171,6 +167,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void deleteBanCommited(Long userId, Long eventId) {
+        checkEventId(eventId);
         User user = checkUser(userId);
         Event forbidEvent = checkEvent(eventId);
         if (!user.getForbiddenCommentEvents().remove(forbidEvent)) {
@@ -192,6 +189,12 @@ public class CommentServiceImpl implements CommentService {
     private Comment checkComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
+    }
+
+    private void checkEventId(Long eventId) {
+        if (eventId == 0) {
+            throw new ValidationException("Не задан eventId");
+        }
     }
 
 }
