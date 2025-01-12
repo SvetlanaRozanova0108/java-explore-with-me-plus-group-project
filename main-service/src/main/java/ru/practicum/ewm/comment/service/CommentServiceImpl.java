@@ -151,6 +151,13 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Override
+    public CommentDto getComment(Long id) {
+        Comment comment = checkComment(id);
+        return CommentMapper.toCommentDto(comment);
+    }
+
+
     @Transactional
     @Override
     public UserDtoForAdmin addBanCommited(Long userId, Long eventId) {
@@ -173,7 +180,6 @@ public class CommentServiceImpl implements CommentService {
         if (!user.getForbiddenCommentEvents().remove(forbidEvent)) {
             throw new NotFoundException("Такого запрета на комментирование не найдено");
         }
-
     }
 
     private User checkUser(Long userId) {
