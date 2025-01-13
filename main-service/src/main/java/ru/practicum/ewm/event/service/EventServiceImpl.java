@@ -63,6 +63,9 @@ public class EventServiceImpl implements EventService {
         Category category = categoryRepository.findById(eventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Категория не найдена"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        if (eventDto.getCommenting() == null) {
+            eventDto.setCommenting(true);
+        }
         Event event = eventRepository.save(EventMapper.mapToEvent(eventDto, category, user));
         return EventMapper.mapToFullDto(event, 0L);
     }
@@ -159,6 +162,9 @@ public class EventServiceImpl implements EventService {
         }
         if (updateRequest.getPaid() != null) {
             event.setPaid(updateRequest.getPaid());
+        }
+        if (updateRequest.getCommenting() != null) {
+           event.setCommenting(updateRequest.getCommenting());
         }
         if (updateRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateRequest.getParticipantLimit());
@@ -379,6 +385,9 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventAdminRequest.getPaid() != null) {
             event.setPaid(updateEventAdminRequest.getPaid());
+        }
+        if (updateEventAdminRequest.getCommenting() != null) {
+            event.setCommenting(updateEventAdminRequest.getCommenting());
         }
         if (updateEventAdminRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
