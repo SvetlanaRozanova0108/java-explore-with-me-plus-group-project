@@ -25,4 +25,6 @@ public interface CommentService {
     void deleteBanCommited(Long userId, Long eventId);
 
     void deleteLike(Long userId, Long commentId);
+
+    CommentDto getComment(Long id);
 }

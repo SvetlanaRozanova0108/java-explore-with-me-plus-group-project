@@ -21,4 +21,4 @@
 ### Admin:
 1. Запретить пользователю комментировать событие: PUT /admin/comments/ban/{userId}
 2. Вернуть пользователю возможность комментировать событие: DELETE /admin/comments/ban/{userId}
-3. Удалить комментариий: DELETE /admin/comments/{commentId}
+3. Удалить комментарий: DELETE /admin/comments/{commentId}
