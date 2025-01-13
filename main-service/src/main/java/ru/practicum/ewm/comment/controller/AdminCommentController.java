@@ -34,8 +34,8 @@ public class AdminCommentController {
         commentService.deleteComment(commentId, eventId);
     }
 
-    @GetMapping ()
-public CommentDto getComment(@RequestParam(defaultValue = "0") Long id) {
+    @GetMapping
+    public CommentDto getComment(@RequestParam(defaultValue = "0") Long id) {
         return commentService.getComment(id);
     }
 }
